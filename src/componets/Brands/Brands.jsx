@@ -4,7 +4,7 @@ import axios from 'axios';
 export default function Brands() {
   const [brands, setBrands] = useState([]);
 
-  // Fetch brands from API on component mount
+  // Fetch brands on component mount
   async function getBrands() {
     try {
       const { data } = await axios.get('https://ecommerce.routemisr.com/api/v1/Brands');
@@ -21,7 +21,7 @@ export default function Brands() {
   return (
     <>
       {/* Page Title */}
-      <h2 className="text-3xl text-center pt-10 font-bold my-6 text-rose-600">
+      <h2 className="text-3xl text-center pt-10 font-bold my-6 text-rose-600 dark:text-rose-400">
         🏷️ Our Brands
       </h2>
 
@@ -29,17 +29,19 @@ export default function Brands() {
       <div className="flex flex-wrap justify-center gap-6 px-4 pb-16">
         {brands.map((brand) => (
           <div key={brand._id} className="w-80 sm:w-96">
-            <article className="relative isolate flex flex-col justify-end h-72 rounded-2xl px-6 pb-8 pt-40 shadow-lg hover:scale-105 transition-transform duration-300">
+            <article className="relative isolate flex flex-col justify-end h-72 rounded-2xl px-6 pb-8 pt-40 shadow-lg hover:scale-105 transition-transform duration-300 bg-white dark:bg-gray-800">
               {/* Brand Image */}
               <img
                 src={brand.image}
                 alt={brand.name}
-                className="absolute inset-0 h-full w-full object-cover rounded-2xl"
+                className="absolute inset-0 h-full w-full object-cover rounded-2xl opacity-90"
               />
+
               {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 rounded-2xl" />
+              <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 rounded-2xl" />
+
               {/* Brand Name */}
-              <h3 className="z-10 text-center text-2xl font-bold text-white">
+              <h3 className="z-10 text-center text-2xl font-bold text-white drop-shadow-md">
                 {brand.name}
               </h3>
             </article>
@@ -49,3 +51,4 @@ export default function Brands() {
     </>
   );
 }
+

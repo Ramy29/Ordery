@@ -1,111 +1,129 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { cartcontext } from '../../Context/Cartcontext';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export default function Cart() {
   const { getloggedcart, UpdateCount, removeProductFromCart } = useContext(cartcontext);
   const [cart, setCart] = useState(null);
 
-  // Get cart items from API
-  async function getCartItems() {
-    try {
-      const response = await getloggedcart();
-      setCart(response.data);
-    } catch (error) {
-      console.error("Error fetching cart:", error);
-    }
-  }
-
-  // Update item quantity in cart
-  async function updateCartItem(productId, count) {
-    if (count > 0) {
-      const response = await UpdateCount(productId, count);
-      setCart(response.data);
-    } else {
-      removeProduct(productId);
-    }
-  }
-
-  // Remove item from cart
-  async function removeProduct(productId) {
-    const response = await removeProductFromCart(productId);
-    setCart(response.data);
-  }
-
+  // Fetch cart on load
   useEffect(() => {
-    getCartItems();
+    fetchCart();
   }, []);
 
+  // Get cart items from API
+  async function fetchCart() {
+    try {
+      const res = await getloggedcart();
+      setCart(res.data);
+    } catch (err) {
+      toast.error("Failed to load your cart");
+    }
+  }
+
+  // Update product quantity
+  async function updateQuantity(productId, count) {
+    if (count < 1) {
+      removeItem(productId);
+      return;
+    }
+
+    try {
+      const res = await UpdateCount(productId, count);
+      toast.success("Quantity updated");
+      setCart(res.data);
+    } catch {
+      toast.error("Failed to update quantity");
+    }
+  }
+
+  // Remove product from cart
+  async function removeItem(productId) {
+    try {
+      const res = await removeProductFromCart(productId);
+      toast.success("Item removed");
+      setCart(res.data);
+    } catch {
+      toast.error("Failed to remove item");
+    }
+  }
+
   return (
-    <>
-      {/* Title */}
-      <h2 className="text-3xl text-center pt-10 text-green-600 font-bold">🛒 Shopping Cart</h2>
+    <div className="container mx-auto px-6 py-8 dark:bg-gray-900 dark:text-white">
+      <h2 className="text-3xl font-bold text-center text-green-600 dark:text-green-400 mb-8">
+        🛒 Your Cart
+      </h2>
 
-      {/* Checkout and Total */}
-      {cart && (
-        <div className="flex flex-col md:flex-row justify-center md:justify-between items-center px-6 mt-6">
-          <span className="text-xl font-bold text-rose-600">
-            Total: {cart.totalCartPrice} EGP
-          </span>
-          <Link
-            to="/checkout"
-            className="mt-4 md:mt-0 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded duration-200"
-          >
-            Proceed to Checkout
-          </Link>
-        </div>
-      )}
-
-      {/* Cart Items */}
-      <div className="px-4 py-6 max-w-4xl mx-auto">
-        {cart?.products.map((item) => (
-          <div key={item.product.id} className="flex flex-col md:flex-row border-b border-gray-300 py-6">
-            {/* Product Image */}
-            <img
-              src={item.product.imageCover}
-              alt={item.product.title}
-              className="w-32 h-32 object-cover rounded-md"
-            />
-
-            {/* Product Details */}
-            <div className="md:ml-6 mt-4 md:mt-0 flex flex-col justify-between flex-1">
-              <h3 className="text-lg font-semibold text-gray-800">{item.product.title}</h3>
-
-              {/* Quantity Control */}
-              <div className="flex items-center mt-4 gap-4">
-                <span className="text-sm text-gray-600">Quantity:</span>
-                <div className="flex items-center border rounded overflow-hidden">
-                  <button
-                    onClick={() => updateCartItem(item.product.id, item.count + 1)}
-                    className="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700"
-                  >
-                    +
-                  </button>
-                  <span className="px-4 py-1">{item.count}</span>
-                  <button
-                    onClick={() => updateCartItem(item.product.id, item.count - 1)}
-                    className="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700"
-                  >
-                    -
-                  </button>
-                </div>
-
-                {/* Price */}
-                <span className="ml-auto text-sm font-bold text-green-700">{item.price} EGP</span>
-
-                {/* Remove Button */}
-                <button
-                  onClick={() => removeProduct(item.product.id)}
-                  className="text-red-500 hover:text-red-700 ml-6"
-                >
-                  <i className="fa-solid fa-trash mr-1"></i> Remove
-                </button>
-              </div>
-            </div>
+      {cart && cart.products.length > 0 ? (
+        <>
+          <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
+            <span className="text-xl font-semibold text-rose-600 dark:text-rose-400">
+              Total: {cart.totalCartPrice} EGP
+            </span>
+            <Link
+              to="/checkout"
+              className="bg-green-600 hover:bg-green-800 text-white font-medium px-6 py-2 rounded transition"
+            >
+              Proceed to Checkout
+            </Link>
           </div>
-        ))}
-      </div>
-    </>
+
+          <div className="space-y-6">
+            {cart.products.map(({ product, count, price }) => (
+              <div
+                key={product.id}
+                className="flex flex-col md:flex-row items-center gap-4 border border-gray-200 dark:border-gray-700 rounded-lg p-4"
+              >
+                <img
+                  src={product.imageCover}
+                  alt={product.title}
+                  className="w-28 h-28 object-cover rounded-lg"
+                />
+
+                <div className="flex-1 space-y-2 w-full">
+                  <h3 className="text-lg font-semibold">{product.title}</h3>
+                  <div className="flex items-center justify-between flex-wrap gap-3">
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm">Qty:</span>
+                      <div className="flex items-center border rounded overflow-hidden">
+                        <button
+                          onClick={() => updateQuantity(product.id, count + 1)}
+                          className="px-3 py-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
+                        >
+                          +
+                        </button>
+                        <span className="px-4 py-1">{count}</span>
+                        <button
+                          onClick={() => updateQuantity(product.id, count - 1)}
+                          className="px-3 py-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
+                        >
+                          -
+                        </button>
+                      </div>
+                    </div>
+
+                    <span className="font-bold text-green-700 dark:text-green-400">{price} EGP</span>
+
+                    <button
+                      onClick={() => removeItem(product.id)}
+                      className="text-red-500 hover:text-red-700 dark:hover:text-red-400"
+                    >
+                      <i className="fa-solid fa-trash mr-1"></i> Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <h3 className="text-center text-lg text-gray-600 dark:text-gray-400 mt-10">
+          Your cart is empty 😔
+        </h3>
+      )}
+    </div>
   );
 }
+
 
