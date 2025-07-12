@@ -1,0 +1,56 @@
+import React from 'react';
+
+export default function Footer() {
+  return (
+    <footer className="bg-green-200 py-6 mt-16 text-center">
+      <a href="#" className="text-2xl font-semibold text-gray-900">Ordery</a>
+      <p className="text-sm text-gray-600 mt-2">
+        © 2024-2025 Ordery. All Rights Reserved. Built with ❤️ by Ramy Esam
+      </p>
+
+      <ul className="flex justify-center space-x-6 mt-4">
+        <li>
+          <a
+            href="https://www.facebook.com/ramy.esam.165?mibextid=ZbWKwL"
+            className="text-gray-500 hover:text-gray-900"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <i className="fa-brands fa-facebook-f text-xl"></i>
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://www.instagram.com/ramy_e_14/profilecard/?igsh=MWR4ZWNzMjZja2owZw=="
+            className="text-gray-500 hover:text-gray-900"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <i className="fa-brands fa-instagram text-xl"></i>
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://x.com/ramyesam701?t=DC2YTgNOVmW3Mjosv18dgA&s=09"
+            className="text-gray-500 hover:text-gray-900"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <i className="fa-brands fa-twitter text-xl"></i>
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://wa.me/qr/TWECHU3HCNXFL1"
+            className="text-gray-500 hover:text-gray-900"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <i className="fa-brands fa-whatsapp text-xl"></i>
+          </a>
+        </li>
+      </ul>
+    </footer>
+  );
+}
+
